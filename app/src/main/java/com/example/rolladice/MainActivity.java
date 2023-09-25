@@ -2,19 +2,24 @@ package com.example.rolladice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-
+import android.widget.Toast;
 import java.util.Random;
+
 
 public class MainActivity extends AppCompatActivity {
 
     ImageView diceImage;
-    Button rollButton;
+    ImageButton rollButton;
     Random randomVal = new Random();
+
+    AnimationDrawable frameAnimation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,13 +27,27 @@ public class MainActivity extends AppCompatActivity {
 
         diceImage = findViewById(R.id.dice_image);
         rollButton = findViewById(R.id.roll_btn);
+        diceImage.setImageResource(R.drawable.c1);
+
+
 
         rollButton.setOnClickListener(v -> RollDice());
     }
 
-    private void RollDice(){
-        int num = randomVal.nextInt(20) + 1;
 
+    private void RollDice(){
+
+
+        diceImage.setImageResource(R.drawable.dice_animation);
+        frameAnimation = (AnimationDrawable) diceImage.getDrawable();
+        frameAnimation.start();
+
+        checkIfAnimationDone(frameAnimation);
+
+
+    }
+
+    private void rollCase(int num) {
         switch (num){
             case 1:
                 diceImage.setImageResource(R.drawable.c1);
@@ -95,5 +114,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void checkIfAnimationDone(AnimationDrawable anim){
+        int num = randomVal.nextInt(20) + 1;
+        final AnimationDrawable a = anim;
+        int timeBetweenChecks = 300;
+        Handler h = new Handler();
+        h.postDelayed(new Runnable(){
+            public void run(){
+                if (a.getCurrent() != a.getFrame(a.getNumberOfFrames() - 1)){
+                    checkIfAnimationDone(a);
+                } else{
+//                    Toast.makeText(getApplicationContext(), "ANIMATION DONE!", Toast.LENGTH_SHORT).show();
+                    rollCase(num);
+                }
+            }
+        }, timeBetweenChecks);
 
+
+    };
 }
