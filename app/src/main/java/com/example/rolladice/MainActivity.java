@@ -29,11 +29,8 @@ public class MainActivity extends AppCompatActivity {
         rollButton = findViewById(R.id.roll_btn);
         diceImage.setImageResource(R.drawable.c1);
 
-
-
         rollButton.setOnClickListener(v -> RollDice());
     }
-
 
     private void RollDice(){
 
@@ -41,11 +38,27 @@ public class MainActivity extends AppCompatActivity {
         diceImage.setImageResource(R.drawable.dice_animation);
         frameAnimation = (AnimationDrawable) diceImage.getDrawable();
         frameAnimation.start();
-
+        rollButton.setOnClickListener(v -> DoNothing());
         checkIfAnimationDone(frameAnimation);
-
-
     }
+
+    private void checkIfAnimationDone(AnimationDrawable anim){
+        int num = randomVal.nextInt(20) + 1;
+        final AnimationDrawable a = anim;
+        int timeBetweenChecks = 300;
+        Handler h = new Handler();
+        h.postDelayed(new Runnable(){
+            public void run(){
+                if (a.getCurrent() != a.getFrame(a.getNumberOfFrames() - 1)){
+                    checkIfAnimationDone(a);
+                } else{
+//                    Toast.makeText(getApplicationContext(), "ANIMATION DONE!", Toast.LENGTH_SHORT).show();
+                    rollCase(num);
+                    rollButton.setOnClickListener(v -> RollDice());
+                }
+            }
+        }, timeBetweenChecks);
+    };
 
     private void rollCase(int num) {
         switch (num){
@@ -113,23 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Bug", "Something went wrong with control flow of RollDice method");
         }
     }
-
-    private void checkIfAnimationDone(AnimationDrawable anim){
-        int num = randomVal.nextInt(20) + 1;
-        final AnimationDrawable a = anim;
-        int timeBetweenChecks = 300;
-        Handler h = new Handler();
-        h.postDelayed(new Runnable(){
-            public void run(){
-                if (a.getCurrent() != a.getFrame(a.getNumberOfFrames() - 1)){
-                    checkIfAnimationDone(a);
-                } else{
-//                    Toast.makeText(getApplicationContext(), "ANIMATION DONE!", Toast.LENGTH_SHORT).show();
-                    rollCase(num);
-                }
-            }
-        }, timeBetweenChecks);
-
-
-    };
+    private void DoNothing(){
+        Log.d("Action not allowed", "Make sure to let dice stop before rolling another");
+    }
 }
